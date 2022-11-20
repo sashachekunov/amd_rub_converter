@@ -4,6 +4,10 @@ import 'package:amd_rub_converter/domain/repositories/currency_repository.dart';
 import 'package:amd_rub_converter/domain/repositories/organization_repository.dart';
 import 'package:amd_rub_converter/domain/repositories/exchange_rate_repository.dart';
 
+import 'data/models/country.dart';
+import 'data/models/currency.dart';
+import 'data/models/organization.dart';
+import 'data/models/exchange_rate.dart';
 import 'domain/entities/country.dart';
 import 'domain/entities/currency.dart';
 import 'domain/entities/organization.dart';
@@ -170,6 +174,32 @@ void main() {
 
       test('UpdateExchangeRateAMDRUB failure',
           () => testUpdateExchangeRateAMDRUB(failureRepository));
+    });
+  });
+
+  group('Models tests', () {
+    group('Country', () {
+      test('toJson', testCountryToJson);
+
+      test('fromJson', testCountryFromJson);
+    });
+
+    group('Currency', () {
+      test('toJson', testCurrencyToJson);
+
+      test('fromJson', testCurrencyFromJson);
+    });
+
+    group('Organization', () {
+      test('toJson', testOrganizationToJson);
+
+      test('fromJson', testOrganizationFromJson);
+    });
+
+    group('ExchangeRate', () {
+      test('toJson', testExchangeRateToJson);
+
+      test('fromJson', testExchangeRateFromJson);
     });
   });
 }
