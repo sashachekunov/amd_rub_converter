@@ -20,6 +20,7 @@ dependencies:
 
   # generators annotation
   freezed_annotation: ^2.0.3
+  json_annotation: ^4.5.0
 
   # widgets
   cupertino_icons: ^1.0.2
@@ -32,6 +33,7 @@ dev_dependencies:
   mockito: ^5.2.0
   freezed: ^2.0.3+1
   build_runner: ^2.1.11
+  json_serializable: ^6.2.0
 
   # linters
   flutter_lints: ^2.0.0
