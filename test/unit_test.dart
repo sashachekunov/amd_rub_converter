@@ -4,6 +4,7 @@ import 'package:amd_rub_converter/domain/repositories/currency_repository.dart';
 import 'package:amd_rub_converter/domain/repositories/organization_repository.dart';
 import 'package:amd_rub_converter/domain/repositories/exchange_rate_repository.dart';
 
+import 'data/db_client.dart';
 import 'data/models/country.dart';
 import 'data/models/currency.dart';
 import 'data/models/organization.dart';
@@ -23,6 +24,7 @@ import 'domain/repositories/currency_repository.dart';
 import 'domain/repositories/organization_repository.dart';
 import 'domain/repositories/exchange_rate_repository.dart';
 
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:test/test.dart';
 
 void main() {
@@ -201,5 +203,27 @@ void main() {
 
       test('fromJson', testExchangeRateFromJson);
     });
+  });
+
+  group('DBClient tests', () {
+    late SharedPreferences preferences;
+    late SharedPreferences failurePreferences;
+
+    setUp(() async {
+      preferences = await createMockedSharedPreferences();
+      failurePreferences = await createMockedSharedPreferencesWithExceptions();
+    });
+
+    test('ReadBool', () => testReadBool(preferences));
+
+    test('ReadBool exception', () => testReadBool(failurePreferences));
+
+    test('ReadString', () => testReadString(preferences));
+
+    test('ReadString exception', () => testReadString(failurePreferences));
+
+    test('WriteBool', () => testWriteBool(preferences));
+
+    test('WriteString', () => testWriteString(preferences));
   });
 }
