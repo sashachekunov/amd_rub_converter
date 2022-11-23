@@ -1,47 +1,60 @@
 import 'package:amd_rub_converter/data/core/exceptions.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:convert';
 
 class DBClient {
   final SharedPreferences _preferences;
 
   const DBClient(this._preferences);
 
-  Future<bool> readBool(String key) => _makeRequest(
-        () async => _handleReadResponse(_preferences.getBool(key)),
+  Future<dynamic> read(String key) => _makeRequest(
+        () async {
+          final response = _preferences.getString(key);
+
+          if (response == null) {
+            throw DataBaseException(
+              'Persistent storage doesn\'t contain '
+              'a value for a given key: $key',
+            );
+          }
+
+          return _decodeJsonString(response);
+        },
       );
 
-  Future<String> readString(String key) => _makeRequest(
-        () async => _handleReadResponse(_preferences.getString(key)),
+  Future<void> write(String key, Object value) async => _makeRequest(
+        () async {
+          final response =
+              await _preferences.setString(key, _encodeJsonString(value));
+
+          if (!response) throw const DataBaseException();
+        },
       );
 
-  Future<bool> writeBool(String key, bool value) async => _makeRequest(
-        () async =>
-            _handleWriteResponse(await _preferences.setBool(key, value)),
-      );
-
-  Future<bool> writeString(String key, String value) async => _makeRequest(
-        () async =>
-            _handleWriteResponse(await _preferences.setString(key, value)),
-      );
-
-  T _handleReadResponse<T>(T? response) {
-    if (response == null) throw const DataBaseException();
-
-    return response;
+  String _encodeJsonString(Object value) {
+    try {
+      return json.encode(value);
+    } catch (e) {
+      return value.toString();
+    }
   }
 
-  bool _handleWriteResponse(bool response) {
-    if (!response) throw const DataBaseException();
-
-    return response;
+  dynamic _decodeJsonString(String jsonString) {
+    try {
+      return json.decode(jsonString);
+    } catch (e) {
+      return jsonString;
+    }
   }
 
   Future<T> _makeRequest<T>(Future<T> Function() request) async {
     try {
       return await request();
+    } on DataBaseException {
+      rethrow;
     } catch (e) {
-      throw const DataBaseException();
+      throw DataBaseException(e.toString());
     }
   }
 }
