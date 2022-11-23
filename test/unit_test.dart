@@ -4,7 +4,7 @@ import 'package:amd_rub_converter/domain/repositories/currency_repository.dart';
 import 'package:amd_rub_converter/domain/repositories/organization_repository.dart';
 import 'package:amd_rub_converter/domain/repositories/exchange_rate_repository.dart';
 
-import 'data/db_client.dart';
+import 'data/core/db_client.dart';
 import 'data/models/country.dart';
 import 'data/models/currency.dart';
 import 'data/models/organization.dart';
@@ -23,6 +23,13 @@ import 'domain/repositories/country_repository.dart';
 import 'domain/repositories/currency_repository.dart';
 import 'domain/repositories/organization_repository.dart';
 import 'domain/repositories/exchange_rate_repository.dart';
+import 'data/data_sources/app_local_data_source.dart' as app_local_ds;
+import 'data/data_sources/country_local_data_source.dart' as country_local_ds;
+import 'data/data_sources/currency_local_data_source.dart' as currency_local_ds;
+import 'data/data_sources/organization_local_data_source.dart'
+    as organization_local_ds;
+import 'data/data_sources/exchange_rate_local_data_source.dart'
+    as exchange_rate_local_ds;
 
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:test/test.dart';
@@ -214,16 +221,86 @@ void main() {
       failurePreferences = await createMockedSharedPreferencesWithExceptions();
     });
 
-    test('ReadBool', () => testReadBool(preferences));
+    test('Read', () => testRead(preferences));
 
-    test('ReadBool exception', () => testReadBool(failurePreferences));
+    test('Read exception', () => testRead(failurePreferences));
 
-    test('ReadString', () => testReadString(preferences));
+    test('Write', () => testWrite(preferences));
+  });
 
-    test('ReadString exception', () => testReadString(failurePreferences));
+  group('DataSources tests', () {
+    late SharedPreferences preferences;
+    late SharedPreferences failurePreferences;
 
-    test('WriteBool', () => testWriteBool(preferences));
+    setUp(() async {
+      preferences = await createMockedSharedPreferences();
+      failurePreferences = await createMockedSharedPreferencesWithExceptions();
+    });
 
-    test('WriteString', () => testWriteString(preferences));
+    group('App', () {
+      test('ReadFirstLaunch success',
+          () => app_local_ds.testReadFirstLaunch(preferences));
+
+      test('ReadFirstLaunch exception',
+          () => app_local_ds.testReadFirstLaunch(failurePreferences));
+
+      test('WriteFirstLaunch success',
+          () => app_local_ds.testWriteFirstLaunch(preferences));
+    });
+
+    group('Country', () {
+      test('ReadCountries success',
+          () => country_local_ds.testReadCountries(preferences));
+
+      test('ReadCountries exception',
+          () => country_local_ds.testReadCountries(failurePreferences));
+
+      test('CreateCountries success',
+          () => country_local_ds.testCreateCountries(preferences));
+    });
+
+    group('Currency', () {
+      test('ReadCurrencies success',
+          () => currency_local_ds.testReadCurrencies(preferences));
+
+      test('ReadCurrencies exception',
+          () => currency_local_ds.testReadCurrencies(failurePreferences));
+
+      test('CreateCurrencies success',
+          () => currency_local_ds.testCreateCurrencies(preferences));
+    });
+
+    group('Organization', () {
+      test('ReadOrganizations success',
+          () => organization_local_ds.testReadOrganizations(preferences));
+
+      test(
+          'ReadOrganizations exception',
+          () =>
+              organization_local_ds.testReadOrganizations(failurePreferences));
+
+      test('CreateOrganizations success',
+          () => organization_local_ds.testCreateOrganizations(preferences));
+    });
+
+    group('ExchangeRate', () {
+      test('ConvertCurrency', () => exchange_rate_local_ds.testConvertCurrency);
+
+      test('IsExchangeRateValid',
+          () => exchange_rate_local_ds.testIsExchangeRateValid);
+
+      test('ReadExchangeRateAMDRUB success',
+          () => exchange_rate_local_ds.testReadExchangeRateAMDRUB(preferences));
+
+      test(
+          'ReadExchangeRateAMDRUB exception',
+          () => exchange_rate_local_ds
+              .testReadExchangeRateAMDRUB(failurePreferences));
+
+      test(
+          'UpdateExchangeRateAMDRUB success',
+          () =>
+              exchange_rate_local_ds.testUpdateExchangeRateAMDRUB(preferences));
+    });
   });
 }
