@@ -106,12 +106,12 @@ class MockExchangeRateRepository extends _i1.Mock
       ) as _i4.Future<_i2.Either<_i5.Failure, double>>);
   @override
   _i4.Future<
-      _i2.Either<_i5.Failure,
-          _i6.ExchangeRateEntity>> readExchangeRateAMDRUB() =>
+      _i2.Either<_i5.Failure, _i6.ExchangeRateEntity>> readExchangeRateAMDRUB(
+          bool? cashless) =>
       (super.noSuchMethod(
         Invocation.method(
           #readExchangeRateAMDRUB,
-          [],
+          [cashless],
         ),
         returnValue:
             _i4.Future<_i2.Either<_i5.Failure, _i6.ExchangeRateEntity>>.value(
@@ -119,7 +119,7 @@ class MockExchangeRateRepository extends _i1.Mock
           this,
           Invocation.method(
             #readExchangeRateAMDRUB,
-            [],
+            [cashless],
           ),
         )),
         returnValueForMissingStub:
@@ -128,12 +128,13 @@ class MockExchangeRateRepository extends _i1.Mock
           this,
           Invocation.method(
             #readExchangeRateAMDRUB,
-            [],
+            [cashless],
           ),
         )),
       ) as _i4.Future<_i2.Either<_i5.Failure, _i6.ExchangeRateEntity>>);
   @override
   _i4.Future<_i2.Either<_i5.Failure, void>> updateExchangeRateAMDRUB({
+    required bool? cashless,
     required double? rate,
     required int? timestamp,
     required List<_i7.OrganizationEntity>? organizations,
@@ -143,6 +144,7 @@ class MockExchangeRateRepository extends _i1.Mock
           #updateExchangeRateAMDRUB,
           [],
           {
+            #cashless: cashless,
             #rate: rate,
             #timestamp: timestamp,
             #organizations: organizations,
@@ -155,6 +157,7 @@ class MockExchangeRateRepository extends _i1.Mock
             #updateExchangeRateAMDRUB,
             [],
             {
+              #cashless: cashless,
               #rate: rate,
               #timestamp: timestamp,
               #organizations: organizations,
@@ -169,6 +172,7 @@ class MockExchangeRateRepository extends _i1.Mock
             #updateExchangeRateAMDRUB,
             [],
             {
+              #cashless: cashless,
               #rate: rate,
               #timestamp: timestamp,
               #organizations: organizations,

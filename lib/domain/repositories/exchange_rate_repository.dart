@@ -11,8 +11,11 @@ abstract class ExchangeRateRepository {
     ExchangeRateEntity exchangeRate,
   );
 
-  Future<Either<Failure, ExchangeRateEntity>> readExchangeRateAMDRUB();
+  Future<Either<Failure, ExchangeRateEntity>> readExchangeRateAMDRUB(
+    bool cashless,
+  );
   Future<Either<Failure, void>> updateExchangeRateAMDRUB({
+    required bool cashless,
     required double rate,
     required int timestamp,
     required List<OrganizationEntity> organizations,

@@ -6,10 +6,10 @@ import 'package:amd_rub_converter/domain/use_cases/use_case.dart';
 import 'package:dartz/dartz.dart';
 
 class ReadExchangeRateAMDRUB
-    extends UseCase<ExchangeRateRepository, ExchangeRateEntity, NoParams> {
+    extends UseCase<ExchangeRateRepository, ExchangeRateEntity, bool> {
   const ReadExchangeRateAMDRUB(super.repository);
 
   @override
-  Future<Either<Failure, ExchangeRateEntity>> call(NoParams params) async =>
-      repository.readExchangeRateAMDRUB();
+  Future<Either<Failure, ExchangeRateEntity>> call(bool params) async =>
+      repository.readExchangeRateAMDRUB(params);
 }

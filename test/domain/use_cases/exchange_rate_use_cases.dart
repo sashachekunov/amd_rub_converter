@@ -1,4 +1,3 @@
-import 'package:amd_rub_converter/domain/use_cases/use_case.dart';
 import 'package:amd_rub_converter/domain/use_cases/convert_currency.dart';
 import 'package:amd_rub_converter/domain/use_cases/is_exchange_rate_valid.dart';
 import 'package:amd_rub_converter/domain/use_cases/read_exchange_rate_amd_rub.dart';
@@ -35,7 +34,7 @@ void testConvertCurrency(ExchangeRateRepository repository) async {
 void testReadExchangeRateAMDRUB(ExchangeRateRepository repository) async {
   final readExchangeRateAMDRUB = ReadExchangeRateAMDRUB(repository);
 
-  final exchangeRateOrFailure = await readExchangeRateAMDRUB(const NoParams());
+  final exchangeRateOrFailure = await readExchangeRateAMDRUB(true);
 
   exchangeRateOrFailure.fold(
     (failure) => expect(failure, StubEntities.failure),
@@ -46,8 +45,9 @@ void testReadExchangeRateAMDRUB(ExchangeRateRepository repository) async {
 void testUpdateExchangeRateAMDRUB(ExchangeRateRepository repository) async {
   final updateExchangeRateAMDRUB = UpdateExchangeRateAMDRUB(repository);
 
-  final exchangeRateOrFailure =
-      await updateExchangeRateAMDRUB(StubEntities.fakeExchangeRate);
+  final exchangeRateOrFailure = await updateExchangeRateAMDRUB(
+    const UpdateExchangeRateAMDRUBParams(true, StubEntities.fakeExchangeRate),
+  );
 
   exchangeRateOrFailure.fold(
     (failure) => expect(failure, StubEntities.failure),

@@ -25,13 +25,14 @@ ExchangeRateRepository createMockedExchangeRateRepository() {
   );
 
   when(
-    mockRepository.readExchangeRateAMDRUB(),
+    mockRepository.readExchangeRateAMDRUB(true),
   ).thenAnswer(
     (realInvocation) => Future.value(const Right(StubEntities.dramToDollar)),
   );
 
   when(
     mockRepository.updateExchangeRateAMDRUB(
+      cashless: true,
       rate: 0.1001,
       timestamp: 1,
       organizations: [],
@@ -59,13 +60,14 @@ ExchangeRateRepository createMockedFailureExchangeRateRepository() {
   );
 
   when(
-    mockRepository.readExchangeRateAMDRUB(),
+    mockRepository.readExchangeRateAMDRUB(true),
   ).thenAnswer(
     (realInvocation) => Future.value(const Left(StubEntities.failure)),
   );
 
   when(
     mockRepository.updateExchangeRateAMDRUB(
+      cashless: true,
       rate: 0.1001,
       timestamp: 1,
       organizations: [],
