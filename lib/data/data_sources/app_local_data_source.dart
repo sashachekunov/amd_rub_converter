@@ -27,5 +27,5 @@ class AppLocalDataSourceImpl implements AppLocalDataSource {
 
   @override
   Future<void> writeFirstLaunch() async =>
-      await _client.write(DBConstants.firstLaunchKey, '');
+      await _client.write(DBConstants.firstLaunchKey, 'not_first_launch');
 }

@@ -30,13 +30,11 @@ class ExchangeRateLocalDataSourceImpl implements ExchangeRateLocalDataSource {
       ExchangeRateMapper.fromModel(exchangeRate).convert(amount);
 
   @override
-  Future<bool> isExchangeRateValid(int timestamp) async {
-    // TODO: update timestamp validation
-    return DateTime.now()
-            .difference(DateTime.fromMillisecondsSinceEpoch(timestamp))
-            .inHours >=
-        2;
-  }
+  Future<bool> isExchangeRateValid(int timestamp) async =>
+      DateTime.now()
+          .difference(DateTime.fromMillisecondsSinceEpoch(timestamp))
+          .inHours <=
+      2;
 
   @override
   Future<ExchangeRateModel> readExchangeRateAMDRUB(bool cashless) async {

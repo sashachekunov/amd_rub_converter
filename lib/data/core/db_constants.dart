@@ -14,7 +14,7 @@ class DBConstants {
   static const cashlessExchangeRateAMDRUBKey = 'cashless_exchange_rate_AMD_RUB';
 
   static const _armenia = CountryModel(id: 0, name: 'Армения', flag: '🇦🇲');
-  static const _russia = CountryModel(id: 0, name: 'Россия', flag: '🇦🇲');
+  static const _russia = CountryModel(id: 0, name: 'Россия', flag: '🇷🇺');
   static const countries = [_armenia, _russia];
 
   static const _armenianDram =
