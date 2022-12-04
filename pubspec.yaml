@@ -1,7 +1,7 @@
 name: amd_rub_converter
 description: A new Flutter project.
 publish_to: 'none'
-version: 1.0.0+1
+version: 1.0.0+2
 
 
 environment:
@@ -15,7 +15,17 @@ dependencies:
   flutter:
     sdk: flutter
 
+  # localization
+  flutter_localizations:
+    sdk: flutter
+
+
+  # bloc
+  bloc: ^8.1.0
+  flutter_bloc: ^8.1.1
+
   # dart
+  get_it: ^7.2.0
   dartz: ^0.10.1
 
   # generators annotation
@@ -45,3 +55,17 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+
+  fonts:
+    - family: NotoSans-Regular
+      fonts:
+        - asset: assets/fonts/Noto_Sans/NotoSans-Regular.ttf
+    - family: NotoSans-Medium
+      fonts:
+        - asset: assets/fonts/Noto_Sans/NotoSans-Medium.ttf
+    - family: NotoSans-SemiBold
+      fonts:
+        - asset: assets/fonts/Noto_Sans/NotoSans-SemiBold.ttf
+    - family: NotoSans-Bold
+      fonts:
+        - asset: assets/fonts/Noto_Sans/NotoSans-Bold.ttf
