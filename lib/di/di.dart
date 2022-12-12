@@ -44,8 +44,7 @@ class DependencyInjector {
   static final _getItInstance = GetIt.instance;
 
   Future<void> init() async {
-    await _registerLocalStorage();
-    _registerDBClient();
+    await _registerDBClient();
     _registerDataSources();
     _registerRepositories();
     _registerUseCases();
@@ -53,14 +52,14 @@ class DependencyInjector {
     _registerRouter();
   }
 
-  Future<void> _registerLocalStorage() async {
+  Future<void> _registerDBClient() async {
     final preferences = await SharedPreferences.getInstance();
     _getItInstance.registerLazySingleton<SharedPreferences>(() => preferences);
-  }
 
-  void _registerDBClient() => _getItInstance.registerLazySingleton<DBClient>(
-        () => DBClient(_sharedPreferences),
-      );
+    _getItInstance.registerLazySingleton<DBClient>(
+      () => DBClient(_sharedPreferences),
+    );
+  }
 
   void _registerDataSources() {
     _getItInstance.registerLazySingleton<AppLocalDataSource>(
@@ -140,22 +139,21 @@ class DependencyInjector {
   void _registerCubits() {
     _getItInstance.registerFactory(
       () => NavigationCubit(
-        isFirstLaunch: _isFirstLaunch,
-        writeFirstLaunch: _writeFirstLaunch,
-        isExchangeRateValid: _isExchangeRateValid,
-        readExchangeRateAMDRUB: _readExchangeRateAMDRUB,
-        createCountries: _createCountries,
-        createCurrencies: _createCurrencies,
-        createOrganizations: _createOrganizations,
+        _isFirstLaunch,
+        _writeFirstLaunch,
+        _isExchangeRateValid,
+        _readExchangeRateAMDRUB,
+        _createCountries,
+        _createCurrencies,
+        _createOrganizations,
       ),
     );
     _getItInstance.registerFactory(() => ConverterCubit(
-          updateExchangeRate: _updateExchangeRateAMDRUB,
-          readCountries: _readCountries,
-          readCurrencies: _readCurrencies,
-          readExchangeRateAMDRUB: _readExchangeRateAMDRUB,
-          readOrganizations: _readOrganizations,
-          convertCurrency: _convertCurrency,
+          _updateExchangeRateAMDRUB,
+          _readOrganizations,
+          _readCurrencies,
+          _readExchangeRateAMDRUB,
+          _convertCurrency,
         ));
   }
 
@@ -219,7 +217,6 @@ class DependencyInjector {
   IsExchangeRateValid get _isExchangeRateValid =>
       _getItInstance<IsExchangeRateValid>();
   IsFirstLaunch get _isFirstLaunch => _getItInstance<IsFirstLaunch>();
-  ReadCountries get _readCountries => _getItInstance<ReadCountries>();
   ReadCurrencies get _readCurrencies => _getItInstance<ReadCurrencies>();
   ReadExchangeRateAMDRUB get _readExchangeRateAMDRUB =>
       _getItInstance<ReadExchangeRateAMDRUB>();

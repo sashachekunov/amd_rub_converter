@@ -14,25 +14,25 @@ import 'package:bloc/bloc.dart';
 part 'navigation_state.dart';
 
 class NavigationCubit extends Cubit<NavigationState> {
-  final IsFirstLaunch isFirstLaunch;
-  final WriteFirstLaunch writeFirstLaunch;
-  final IsExchangeRateValid isExchangeRateValid;
-  final ReadExchangeRateAMDRUB readExchangeRateAMDRUB;
-  final CreateCountries createCountries;
-  final CreateCurrencies createCurrencies;
-  final CreateOrganizations createOrganizations;
+  final IsFirstLaunch _isFirstLaunch;
+  final WriteFirstLaunch _writeFirstLaunch;
+  final IsExchangeRateValid _isExchangeRateValid;
+  final ReadExchangeRateAMDRUB _readExchangeRateAMDRUB;
+  final CreateCountries _createCountries;
+  final CreateCurrencies _createCurrencies;
+  final CreateOrganizations _createOrganizations;
 
   static const _defaultState = CurrencyConverter();
 
-  NavigationCubit({
-    required this.isFirstLaunch,
-    required this.writeFirstLaunch,
-    required this.isExchangeRateValid,
-    required this.readExchangeRateAMDRUB,
-    required this.createCountries,
-    required this.createOrganizations,
-    required this.createCurrencies,
-  }) : super(_defaultState);
+  NavigationCubit(
+    this._isFirstLaunch,
+    this._writeFirstLaunch,
+    this._isExchangeRateValid,
+    this._readExchangeRateAMDRUB,
+    this._createCountries,
+    this._createCurrencies,
+    this._createOrganizations,
+  ) : super(_defaultState);
 
   void initNavigationState() async {
     if (await _checkFirstLaunch() || await _validateExchangeRates()) {
@@ -60,7 +60,7 @@ class NavigationCubit extends Cubit<NavigationState> {
   void resetPrevNavigationState() => emit(state.prevState ?? _defaultState);
 
   Future<bool> _checkFirstLaunch() async {
-    final isFirstLaunchOrFailure = await isFirstLaunch(const NoParams());
+    final isFirstLaunchOrFailure = await _isFirstLaunch(const NoParams());
 
     final firstLaunch = isFirstLaunchOrFailure.fold<bool>(
       (failure) => true,
@@ -78,10 +78,10 @@ class NavigationCubit extends Cubit<NavigationState> {
   Future<void> _initAppData() async {
     const noParams = NoParams();
 
-    await writeFirstLaunch(noParams);
-    await createCountries(noParams);
-    await createCurrencies(noParams);
-    await createOrganizations(noParams);
+    await _writeFirstLaunch(noParams);
+    await _createCountries(noParams);
+    await _createCurrencies(noParams);
+    await _createOrganizations(noParams);
   }
 
   Future<bool> _validateExchangeRates() async {
@@ -105,7 +105,7 @@ class NavigationCubit extends Cubit<NavigationState> {
   }
 
   Future<bool> _exchangeRateValid(int timestamp) async {
-    final exchangeRateValidOrFailure = await isExchangeRateValid(timestamp);
+    final exchangeRateValidOrFailure = await _isExchangeRateValid(timestamp);
 
     return exchangeRateValidOrFailure.fold<bool>(
       (failure) => false,
@@ -114,7 +114,7 @@ class NavigationCubit extends Cubit<NavigationState> {
   }
 
   Future<ExchangeRateEntity?> _readExchangeRate(bool cashless) async {
-    final exchangeRateOrFailure = await readExchangeRateAMDRUB(cashless);
+    final exchangeRateOrFailure = await _readExchangeRateAMDRUB(cashless);
 
     return exchangeRateOrFailure.fold<ExchangeRateEntity?>(
       (failure) => null,

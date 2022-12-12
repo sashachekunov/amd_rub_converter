@@ -2,7 +2,6 @@ import 'package:amd_rub_converter/domain/entities/currency_entity.dart';
 import 'package:amd_rub_converter/domain/entities/exchange_rate_entity.dart';
 import 'package:amd_rub_converter/domain/entities/organization_entity.dart';
 import 'package:amd_rub_converter/domain/use_cases/convert_currency.dart';
-import 'package:amd_rub_converter/domain/use_cases/read_countries.dart';
 import 'package:amd_rub_converter/domain/use_cases/read_currencies.dart';
 import 'package:amd_rub_converter/domain/use_cases/read_exchange_rate_amd_rub.dart';
 import 'package:amd_rub_converter/domain/use_cases/read_organizations.dart';
@@ -14,21 +13,19 @@ import 'converter_state.dart';
 import 'package:bloc/bloc.dart';
 
 class ConverterCubit extends Cubit<ConverterState> {
-  final UpdateExchangeRateAMDRUB updateExchangeRate;
-  final ReadCountries readCountries;
-  final ReadOrganizations readOrganizations;
-  final ReadCurrencies readCurrencies;
-  final ReadExchangeRateAMDRUB readExchangeRateAMDRUB;
-  final ConvertCurrency convertCurrency;
+  final UpdateExchangeRateAMDRUB _updateExchangeRate;
+  final ReadOrganizations _readOrganizations;
+  final ReadCurrencies _readCurrencies;
+  final ReadExchangeRateAMDRUB _readExchangeRateAMDRUB;
+  final ConvertCurrency _convertCurrency;
 
-  ConverterCubit({
-    required this.updateExchangeRate,
-    required this.readCountries,
-    required this.readOrganizations,
-    required this.readCurrencies,
-    required this.readExchangeRateAMDRUB,
-    required this.convertCurrency,
-  }) : super(const ConverterState());
+  ConverterCubit(
+    this._updateExchangeRate,
+    this._readOrganizations,
+    this._readCurrencies,
+    this._readExchangeRateAMDRUB,
+    this._convertCurrency,
+  ) : super(const ConverterState());
 
   Future<bool> _validateExchangeRates() async {
     final cashlessExchangeRate = await _readExchangeRate(true);
@@ -43,7 +40,7 @@ class ConverterCubit extends Cubit<ConverterState> {
   void initConverterState() async {
     if (!(await _validateExchangeRates())) return;
 
-    final currencies = (await _readCurrencies());
+    final currencies = (await _readAllCurrencies());
     if (currencies.isEmpty) return;
 
     final exchangeRate = ExchangeRateEntity(
@@ -57,14 +54,14 @@ class ConverterCubit extends Cubit<ConverterState> {
     emit(state.copyWith(
       cashExchangeRate: exchangeRate,
       cashlessExchangeRate: exchangeRate,
-      organizations: await _readOrganizations(),
+      organizations: await _readAllOrganizations(),
     ));
   }
 
   Future<double> convert(double amount) async {
     if (state.exchangeRate == null) return 0;
 
-    return (await convertCurrency(
+    return (await _convertCurrency(
             ConvertCurrencyParams(amount, state.exchangeRate!)))
         .fold((l) => 0, (result) => result);
   }
@@ -73,24 +70,27 @@ class ConverterCubit extends Cubit<ConverterState> {
     ExchangeRateEntity cashExchangeRate,
     ExchangeRateEntity cashlessExchangeRate,
   ) async {
-    await updateExchangeRate(
+    await _updateExchangeRate(
       UpdateExchangeRateAMDRUBParams(false, cashExchangeRate),
     );
-    await updateExchangeRate(
+    await _updateExchangeRate(
         UpdateExchangeRateAMDRUBParams(true, cashlessExchangeRate));
 
     emit(state.copyWith(
       cashExchangeRate: cashExchangeRate,
       cashlessExchangeRate: cashlessExchangeRate,
+      organizations: state.organizations.isEmpty
+          ? await _readAllOrganizations()
+          : state.organizations,
     ));
   }
 
   void switchCashlessMode() => emit(state.copyWith(cashless: !state.cashless));
 
-  Future<List<OrganizationEntity>> _readOrganizations() async {
+  Future<List<OrganizationEntity>> _readAllOrganizations() async {
     const noParams = NoParams();
 
-    final organizationsOrFailure = await readOrganizations(noParams);
+    final organizationsOrFailure = await _readOrganizations(noParams);
 
     return organizationsOrFailure.fold(
       (l) => const <OrganizationEntity>[],
@@ -98,10 +98,10 @@ class ConverterCubit extends Cubit<ConverterState> {
     );
   }
 
-  Future<List<CurrencyEntity>> _readCurrencies() async {
+  Future<List<CurrencyEntity>> _readAllCurrencies() async {
     const noParams = NoParams();
 
-    final currenciesOrFailure = await readCurrencies(noParams);
+    final currenciesOrFailure = await _readCurrencies(noParams);
     return currenciesOrFailure.fold(
       (l) => const <CurrencyEntity>[],
       (currencies) => currencies,
@@ -109,7 +109,7 @@ class ConverterCubit extends Cubit<ConverterState> {
   }
 
   Future<ExchangeRateEntity?> _readExchangeRate(bool cashless) async {
-    final exchangeRateOrFailure = await readExchangeRateAMDRUB(cashless);
+    final exchangeRateOrFailure = await _readExchangeRateAMDRUB(cashless);
 
     return exchangeRateOrFailure.fold<ExchangeRateEntity?>(
       (failure) => null,
