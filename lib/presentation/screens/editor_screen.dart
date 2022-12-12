@@ -8,6 +8,7 @@ import 'package:amd_rub_converter/presentation/widgets/exchange_rate_input_form.
 import 'package:amd_rub_converter/presentation/screens/loading_screen.dart';
 import 'package:amd_rub_converter/presentation/core/app_typography.dart';
 
+import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter/material.dart';
 
@@ -64,9 +65,6 @@ class EditorScreen extends StatefulWidget {
 }
 
 class _EditorScreenState extends State<EditorScreen> {
-  late ExchangeRateInputForm cashInput;
-  late ExchangeRateInputForm cashlessInput;
-
   late double cashRate;
   late double cashlessRate;
   late List<OrganizationEntity> cashOrganizations;
@@ -74,8 +72,12 @@ class _EditorScreenState extends State<EditorScreen> {
 
   @override
   void initState() {
-    cashRate = widget.cashExchangeRate.rate;
-    cashlessRate = widget.cashlessExchangeRate.rate;
+    cashRate = widget.cashExchangeRate.rate == 0
+        ? 0
+        : 1 / widget.cashExchangeRate.rate;
+    cashlessRate = widget.cashlessExchangeRate.rate == 0
+        ? 0
+        : 1 / widget.cashlessExchangeRate.rate;
     cashOrganizations = widget.cashExchangeRate.organizations;
     cashlessOrganizations = widget.cashlessExchangeRate.organizations;
 
@@ -96,6 +98,20 @@ class _EditorScreenState extends State<EditorScreen> {
           child: SingleChildScrollView(
             child: Column(
               children: [
+                GestureDetector(
+                  onTap: () async {
+                    if (!await launchUrl(
+                      Uri.parse('https://t.me/armeniaCurrency'),
+                    )) {
+                      throw 'Could not launch url';
+                    }
+                  },
+                  child: const Text(
+                    'Актуальные курсы',
+                    style: AppTypography.body2Link,
+                  ),
+                ),
+                _buildDivider(),
                 ExchangeRateInputForm(
                   header: 'Наличный курс',
                   exchangeRate: widget.cashExchangeRate,

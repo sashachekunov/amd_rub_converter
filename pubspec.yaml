@@ -1,7 +1,7 @@
 name: amd_rub_converter
 description: A new Flutter project.
 publish_to: 'none'
-version: 1.0.0+2
+version: 1.0.0+3
 
 
 environment:
@@ -18,7 +18,6 @@ dependencies:
   # localization
   flutter_localizations:
     sdk: flutter
-
 
   # bloc
   bloc: ^8.1.0
@@ -37,6 +36,7 @@ dependencies:
 
   # widgets
   cupertino_icons: ^1.0.2
+  url_launcher: ^6.1.7
 
 
 dev_dependencies:

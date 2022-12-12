@@ -57,6 +57,7 @@ class AppTypography {
   static const body2Link = TextStyle(
     fontFamily: mediumFontFamily,
     fontSize: 14,
+    decoration: TextDecoration.underline,
   );
   static const body3 = TextStyle(
     fontFamily: mediumFontFamily,

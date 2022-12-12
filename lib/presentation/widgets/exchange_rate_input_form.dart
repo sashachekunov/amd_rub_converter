@@ -126,23 +126,29 @@ class _ExchangeRateInputFormState extends State<ExchangeRateInputForm> {
   Row _buildOrganizationRow(OrganizationEntity organization) => Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(
-            organization.name,
-            style: AppTypography.h5.copyWith(
-              color: organization == selectedOrganization ||
-                      selectedOrganization == null &&
-                          widget.exchangeRate.organizations.isNotEmpty &&
-                          organization ==
-                              widget.exchangeRate.organizations.first
-                  ? Colors.black
-                  : Colors.black38,
+          Flexible(
+            child: Text(
+              organization.name,
+              style: AppTypography.h5.copyWith(
+                color: organization == selectedOrganization ||
+                        selectedOrganization == null &&
+                            widget.exchangeRate.organizations.isNotEmpty &&
+                            organization ==
+                                widget.exchangeRate.organizations.first
+                    ? Colors.black
+                    : Colors.black38,
+              ),
             ),
           ),
-          Image.network(
-            organization.image,
-            height: 50,
-            width: 50,
-            fit: BoxFit.contain,
+          Flexible(
+            child: Image.network(
+              organization.image,
+              height: 50,
+              width: 50,
+              fit: BoxFit.contain,
+              errorBuilder: (context, error, stackTrace) =>
+                  const SizedBox(height: 50, width: 50),
+            ),
           ),
         ],
       );

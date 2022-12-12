@@ -34,7 +34,7 @@ class ExchangeRateLocalDataSourceImpl implements ExchangeRateLocalDataSource {
       DateTime.now()
           .difference(DateTime.fromMillisecondsSinceEpoch(timestamp))
           .inHours <=
-      2;
+      12;
 
   @override
   Future<ExchangeRateModel> readExchangeRateAMDRUB(bool cashless) async {
