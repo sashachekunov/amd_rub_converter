@@ -22,7 +22,7 @@ void testWrite(SharedPreferences preferences) async {
   final client = createDBClient(preferences);
 
   try {
-    await client.write('string_key', 'string');
+    client.write('string_key', 'string');
   } catch (e) {
     expect(e.runtimeType, DataBaseException);
   }

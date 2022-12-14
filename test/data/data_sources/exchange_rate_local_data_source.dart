@@ -1,7 +1,7 @@
 import 'package:amd_rub_converter/data/core/db_client.dart';
 import 'package:amd_rub_converter/data/core/db_constants.dart';
 import 'package:amd_rub_converter/data/core/exceptions.dart';
-import 'package:amd_rub_converter/data/mappers/exchange_rate_mapper.dart';
+import 'package:amd_rub_converter/data/models/exchange_rate_model.dart';
 import 'package:amd_rub_converter/data/data_sources/exchange_rate_local_data_source.dart';
 
 import '../../domain/core/stub_entities.dart';
@@ -15,7 +15,7 @@ void testConvertCurrency(SharedPreferences preferences) async {
   expect(
     await dataSource.convertCurrency(
       10000,
-      ExchangeRateMapper.fromEntity(StubEntities.dramToDollar),
+      ExchangeRateModel.fromEntity(StubEntities.dramToDollar),
     ),
     25,
   );

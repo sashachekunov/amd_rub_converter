@@ -129,13 +129,14 @@ class __$$_CurrencyModelCopyWithImpl<$Res>
 
 /// @nodoc
 @JsonSerializable()
-class _$_CurrencyModel implements _CurrencyModel {
+class _$_CurrencyModel extends _CurrencyModel {
   const _$_CurrencyModel(
       {this.id = 0,
       required this.code,
       required this.symbol,
       required final List<CountryModel> users})
-      : _users = users;
+      : _users = users,
+        super._();
 
   factory _$_CurrencyModel.fromJson(Map<String, dynamic> json) =>
       _$$_CurrencyModelFromJson(json);
@@ -189,12 +190,13 @@ class _$_CurrencyModel implements _CurrencyModel {
   }
 }
 
-abstract class _CurrencyModel implements CurrencyModel {
+abstract class _CurrencyModel extends CurrencyModel {
   const factory _CurrencyModel(
       {final int id,
       required final String code,
       required final String symbol,
       required final List<CountryModel> users}) = _$_CurrencyModel;
+  const _CurrencyModel._() : super._();
 
   factory _CurrencyModel.fromJson(Map<String, dynamic> json) =
       _$_CurrencyModel.fromJson;

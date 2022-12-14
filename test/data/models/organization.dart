@@ -1,5 +1,4 @@
 import 'package:amd_rub_converter/data/models/organization_model.dart';
-import 'package:amd_rub_converter/data/mappers/organization_mapper.dart';
 
 import '../../domain/core/stub_entities.dart';
 import '../core/stub_responses.dart';
@@ -22,7 +21,7 @@ void testOrganizationFromJson() {
 }
 
 OrganizationModel createOrganizationModel() =>
-    OrganizationMapper.fromEntity(StubEntities.organization);
+    OrganizationModel.fromEntity(StubEntities.organization);
 
 OrganizationModel createOrganizationModelFromJson() =>
     OrganizationModel.fromJson(StubResponses.organization);

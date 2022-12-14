@@ -1,5 +1,4 @@
 import 'package:amd_rub_converter/data/models/currency_model.dart';
-import 'package:amd_rub_converter/data/mappers/currency_mapper.dart';
 
 import '../../domain/core/stub_entities.dart';
 import '../core/stub_responses.dart';
@@ -22,7 +21,7 @@ void testCurrencyFromJson() {
 }
 
 CurrencyModel createCurrencyModel() =>
-    CurrencyMapper.fromEntity(StubEntities.armenianDram);
+    CurrencyModel.fromEntity(StubEntities.armenianDram);
 
 CurrencyModel createCurrencyModelFromJson() =>
     CurrencyModel.fromJson(StubResponses.armenianDram);

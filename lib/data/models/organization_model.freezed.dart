@@ -118,9 +118,10 @@ class __$$_OrganizationModelCopyWithImpl<$Res>
 
 /// @nodoc
 @JsonSerializable()
-class _$_OrganizationModel implements _OrganizationModel {
+class _$_OrganizationModel extends _OrganizationModel {
   const _$_OrganizationModel(
-      {this.id = 0, required this.name, required this.image});
+      {this.id = 0, required this.name, required this.image})
+      : super._();
 
   factory _$_OrganizationModel.fromJson(Map<String, dynamic> json) =>
       _$$_OrganizationModelFromJson(json);
@@ -167,11 +168,12 @@ class _$_OrganizationModel implements _OrganizationModel {
   }
 }
 
-abstract class _OrganizationModel implements OrganizationModel {
+abstract class _OrganizationModel extends OrganizationModel {
   const factory _OrganizationModel(
       {final int id,
       required final String name,
       required final String image}) = _$_OrganizationModel;
+  const _OrganizationModel._() : super._();
 
   factory _OrganizationModel.fromJson(Map<String, dynamic> json) =
       _$_OrganizationModel.fromJson;

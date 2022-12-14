@@ -188,7 +188,7 @@ class __$$_ExchangeRateModelCopyWithImpl<$Res>
 
 /// @nodoc
 @JsonSerializable()
-class _$_ExchangeRateModel implements _ExchangeRateModel {
+class _$_ExchangeRateModel extends _ExchangeRateModel {
   const _$_ExchangeRateModel(
       {this.id = 0,
       required this.from,
@@ -196,7 +196,8 @@ class _$_ExchangeRateModel implements _ExchangeRateModel {
       required this.rate,
       required this.timestamp,
       required final List<OrganizationModel> organizations})
-      : _organizations = organizations;
+      : _organizations = organizations,
+        super._();
 
   factory _$_ExchangeRateModel.fromJson(Map<String, dynamic> json) =>
       _$$_ExchangeRateModelFromJson(json);
@@ -259,7 +260,7 @@ class _$_ExchangeRateModel implements _ExchangeRateModel {
   }
 }
 
-abstract class _ExchangeRateModel implements ExchangeRateModel {
+abstract class _ExchangeRateModel extends ExchangeRateModel {
   const factory _ExchangeRateModel(
           {final int id,
           required final CurrencyModel from,
@@ -268,6 +269,7 @@ abstract class _ExchangeRateModel implements ExchangeRateModel {
           required final int timestamp,
           required final List<OrganizationModel> organizations}) =
       _$_ExchangeRateModel;
+  const _ExchangeRateModel._() : super._();
 
   factory _ExchangeRateModel.fromJson(Map<String, dynamic> json) =
       _$_ExchangeRateModel.fromJson;

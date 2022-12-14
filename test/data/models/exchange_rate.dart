@@ -1,5 +1,4 @@
 import 'package:amd_rub_converter/data/models/exchange_rate_model.dart';
-import 'package:amd_rub_converter/data/mappers/exchange_rate_mapper.dart';
 
 import '../../domain/core/stub_entities.dart';
 import '../core/stub_responses.dart';
@@ -22,7 +21,7 @@ void testExchangeRateFromJson() {
 }
 
 ExchangeRateModel createExchangeRateModel() =>
-    ExchangeRateMapper.fromEntity(StubEntities.dramToDollar);
+    ExchangeRateModel.fromEntity(StubEntities.dramToDollar);
 
 ExchangeRateModel createExchangeRateModelFromJson() =>
     ExchangeRateModel.fromJson(StubResponses.dramToDollar);
