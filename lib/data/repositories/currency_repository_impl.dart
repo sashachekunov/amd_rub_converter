@@ -3,7 +3,6 @@ import 'package:amd_rub_converter/domain/entities/currency_entity.dart';
 import 'package:amd_rub_converter/domain/repositories/currency_repository.dart';
 import 'package:amd_rub_converter/data/data_sources/currency_local_data_source.dart';
 import 'package:amd_rub_converter/data/repositories/repository_impl.dart';
-import 'package:amd_rub_converter/data/mappers/currency_mapper.dart';
 
 import 'package:dartz/dartz.dart';
 
@@ -20,6 +19,6 @@ class CurrencyRepositoryImpl extends RepositoryImpl
   @override
   Future<Either<Failure, List<CurrencyEntity>>> readCurrencies() =>
       handleDataSourceRequest(() async => (await _dataSource.readCurrencies())
-          .map((e) => CurrencyMapper.fromModel(e))
+          .map((e) => e.fromModel())
           .toList());
 }
