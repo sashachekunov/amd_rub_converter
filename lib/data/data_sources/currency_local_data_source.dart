@@ -19,7 +19,7 @@ class CurrencyLocalDataSourceImpl implements CurrencyLocalDataSource {
   Future<void> createCurrencies() async {
     final currencies = DBConstants.currencies.map((e) => e.toJson()).toList();
 
-    await _client.write(DBConstants.currenciesKey, currencies);
+    _client.write(DBConstants.currenciesKey, currencies);
   }
 
   @override

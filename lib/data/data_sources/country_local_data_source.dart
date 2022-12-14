@@ -19,7 +19,7 @@ class CountryLocalDataSourceImpl implements CountryLocalDataSource {
   Future<void> createCountries() async {
     final countries = DBConstants.countries.map((e) => e.toJson()).toList();
 
-    await _client.write(DBConstants.countriesKey, countries);
+    _client.write(DBConstants.countriesKey, countries);
   }
 
   @override

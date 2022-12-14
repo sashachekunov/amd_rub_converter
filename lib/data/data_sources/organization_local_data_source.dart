@@ -20,7 +20,7 @@ class OrganizationLocalDataSourceImpl implements OrganizationLocalDataSource {
     final organizations =
         DBConstants.organizations.map((e) => e.toJson()).toList();
 
-    await _client.write(DBConstants.organizationsKey, organizations);
+    _client.write(DBConstants.organizationsKey, organizations);
   }
 
   @override

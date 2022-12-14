@@ -8,39 +8,38 @@ class DBClient {
 
   const DBClient(this._preferences);
 
-  Future<dynamic> read(String key) => _makeRequest(
-        () async {
-          final response = _preferences.getString(key);
+  dynamic read(String key) => _makeRequest(() => _read(key));
 
-          if (response == null) {
-            throw DataBaseException(
-              'Persistent storage doesn\'t contain '
-              'a value for a given key: $key',
-            );
-          }
+  void write(String key, Object value) =>
+      _makeRequest(() => _write(key, value));
 
-          return _decodeJsonString(response);
-        },
+  dynamic _read(String key) {
+    final response = _preferences.getString(key);
+
+    if (response == null) {
+      throw DataBaseException(
+        'Persistent storage doesn\'t contain '
+        'a value for a given key: $key',
       );
-
-  Future<void> write(String key, Object value) async => _makeRequest(
-        () async {
-          final response =
-              await _preferences.setString(key, _encodeJsonString(value));
-
-          if (!response) throw const DataBaseException();
-        },
-      );
-
-  String _encodeJsonString(Object value) {
-    try {
-      return json.encode(value);
-    } catch (e) {
-      return value.toString();
     }
+
+    return _decodeFromJsonString(response);
   }
 
-  dynamic _decodeJsonString(String jsonString) {
+  void _write(String key, Object value) async {
+    final response =
+        await _preferences.setString(key, _encodeToJsonString(value));
+
+    if (!response) throw const DataBaseException();
+  }
+
+  String _encodeToJsonString(Object value) {
+    if (value is Map<String, dynamic>) return json.encode(value);
+
+    return value.toString();
+  }
+
+  dynamic _decodeFromJsonString(String jsonString) {
     try {
       return json.decode(jsonString);
     } catch (e) {
@@ -48,9 +47,9 @@ class DBClient {
     }
   }
 
-  Future<T> _makeRequest<T>(Future<T> Function() request) async {
+  T _makeRequest<T>(T Function() request) {
     try {
-      return await request();
+      return request();
     } on DataBaseException {
       rethrow;
     } catch (e) {
