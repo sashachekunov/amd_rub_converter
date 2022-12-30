@@ -1,38 +1,41 @@
 import 'package:amd_rub_converter/data/core/db_client.dart';
+
 import 'package:amd_rub_converter/data/data_sources/app_local_data_source.dart';
-import 'package:amd_rub_converter/data/data_sources/country_local_data_source.dart';
 import 'package:amd_rub_converter/data/data_sources/currency_local_data_source.dart';
-import 'package:amd_rub_converter/data/data_sources/exchange_rate_local_data_source.dart';
 import 'package:amd_rub_converter/data/data_sources/organization_local_data_source.dart';
+import 'package:amd_rub_converter/data/data_sources/exchange_rate_local_data_source.dart';
+
 import 'package:amd_rub_converter/data/repositories/app_repository_impl.dart';
-import 'package:amd_rub_converter/data/repositories/country_repository_impl.dart';
 import 'package:amd_rub_converter/data/repositories/currency_repository_impl.dart';
-import 'package:amd_rub_converter/data/repositories/exchange_rate_repository_impl.dart';
 import 'package:amd_rub_converter/data/repositories/organization_repository_impl.dart';
+import 'package:amd_rub_converter/data/repositories/exchange_rate_repository_impl.dart';
+
 import 'package:amd_rub_converter/domain/repositories/app_repository.dart';
-import 'package:amd_rub_converter/domain/repositories/country_repository.dart';
 import 'package:amd_rub_converter/domain/repositories/currency_repository.dart';
-import 'package:amd_rub_converter/domain/repositories/exchange_rate_repository.dart';
 import 'package:amd_rub_converter/domain/repositories/organization_repository.dart';
+import 'package:amd_rub_converter/domain/repositories/exchange_rate_repository.dart';
+
+import 'package:amd_rub_converter/domain/use_cases/read_currencies.dart';
+import 'package:amd_rub_converter/domain/use_cases/is_first_launch.dart';
 import 'package:amd_rub_converter/domain/use_cases/convert_currency.dart';
-import 'package:amd_rub_converter/domain/use_cases/create_countries.dart';
 import 'package:amd_rub_converter/domain/use_cases/create_currencies.dart';
+import 'package:amd_rub_converter/domain/use_cases/read_organizations.dart';
+import 'package:amd_rub_converter/domain/use_cases/write_first_launch.dart';
 import 'package:amd_rub_converter/domain/use_cases/create_organizations.dart';
 import 'package:amd_rub_converter/domain/use_cases/is_exchange_rate_valid.dart';
-import 'package:amd_rub_converter/domain/use_cases/is_first_launch.dart';
-import 'package:amd_rub_converter/domain/use_cases/read_countries.dart';
-import 'package:amd_rub_converter/domain/use_cases/read_currencies.dart';
 import 'package:amd_rub_converter/domain/use_cases/read_exchange_rate_amd_rub.dart';
-import 'package:amd_rub_converter/domain/use_cases/read_organizations.dart';
 import 'package:amd_rub_converter/domain/use_cases/update_exchange_rate_amd_rub.dart';
-import 'package:amd_rub_converter/domain/use_cases/write_first_launch.dart';
+
 import 'package:amd_rub_converter/presentation/bloc/converter/converter_cubit.dart';
 import 'package:amd_rub_converter/presentation/bloc/navigation/navigation_cubit.dart';
+import 'package:amd_rub_converter/presentation/core/local_notifications.dart';
+
+import 'package:amd_rub_converter/presentation/router/router_delegate_impl.dart';
 import 'package:amd_rub_converter/presentation/router/back_button_dispatcher_impl.dart';
 import 'package:amd_rub_converter/presentation/router/route_information_parser_impl.dart';
 import 'package:amd_rub_converter/presentation/router/route_information_provider_impl.dart';
-import 'package:amd_rub_converter/presentation/router/router_delegate_impl.dart';
 
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:get_it/get_it.dart';
 
@@ -45,6 +48,7 @@ class DependencyInjector {
 
   Future<void> init() async {
     await _registerDBClient();
+    await registerLocalNotifications();
     _registerDataSources();
     _registerRepositories();
     _registerUseCases();
@@ -54,19 +58,12 @@ class DependencyInjector {
 
   Future<void> _registerDBClient() async {
     final preferences = await SharedPreferences.getInstance();
-    _getItInstance.registerLazySingleton<SharedPreferences>(() => preferences);
-
-    _getItInstance.registerLazySingleton<DBClient>(
-      () => DBClient(_sharedPreferences),
-    );
+    _getItInstance.registerLazySingleton<DBClient>(() => DBClient(preferences));
   }
 
   void _registerDataSources() {
     _getItInstance.registerLazySingleton<AppLocalDataSource>(
-      () => AppLocalDataSourceImpl(_client),
-    );
-    _getItInstance.registerLazySingleton<CountryLocalDataSource>(
-      () => CountryLocalDataSourceImpl(_client),
+      () => AppLocalDataSourceImpl(_client, _localNotifications),
     );
     _getItInstance.registerLazySingleton<CurrencyLocalDataSource>(
       () => CurrencyLocalDataSourceImpl(_client),
@@ -83,9 +80,6 @@ class DependencyInjector {
     _getItInstance.registerLazySingleton<AppRepository>(
       () => AppRepositoryImpl(_appLocalDataSource),
     );
-    _getItInstance.registerLazySingleton<CountryRepository>(
-      () => CountryRepositoryImpl(_countryLocalDataSource),
-    );
     _getItInstance.registerLazySingleton<CurrencyRepository>(
       () => CurrencyRepositoryImpl(_currencyLocalDataSource),
     );
@@ -101,9 +95,6 @@ class DependencyInjector {
     _getItInstance.registerLazySingleton<ConvertCurrency>(
       () => ConvertCurrency(_exchangeRateRepository),
     );
-    _getItInstance.registerLazySingleton<CreateCountries>(
-      () => CreateCountries(_countryRepository),
-    );
     _getItInstance.registerLazySingleton<CreateCurrencies>(
       () => CreateCurrencies(_currencyRepository),
     );
@@ -115,9 +106,6 @@ class DependencyInjector {
     );
     _getItInstance.registerLazySingleton<IsFirstLaunch>(
       () => IsFirstLaunch(_appRepository),
-    );
-    _getItInstance.registerLazySingleton<ReadCountries>(
-      () => ReadCountries(_countryRepository),
     );
     _getItInstance.registerLazySingleton<ReadCurrencies>(
       () => ReadCurrencies(_currencyRepository),
@@ -143,18 +131,19 @@ class DependencyInjector {
         _writeFirstLaunch,
         _isExchangeRateValid,
         _readExchangeRateAMDRUB,
-        _createCountries,
+      ),
+    );
+    _getItInstance.registerFactory(
+      () => ConverterCubit(
+        _updateExchangeRateAMDRUB,
+        _readOrganizations,
+        _readCurrencies,
+        _readExchangeRateAMDRUB,
+        _convertCurrency,
         _createCurrencies,
         _createOrganizations,
       ),
     );
-    _getItInstance.registerFactory(() => ConverterCubit(
-          _updateExchangeRateAMDRUB,
-          _readOrganizations,
-          _readCurrencies,
-          _readExchangeRateAMDRUB,
-          _convertCurrency,
-        ));
   }
 
   void _registerRouter() {
@@ -165,15 +154,32 @@ class DependencyInjector {
       () => const RouteInformationParserImpl(),
     );
     _getItInstance.registerLazySingleton<RouterDelegateImpl>(
-      () => RouterDelegateImpl(),
+      () => RouterDelegateImpl(_navigationCubit),
     );
     _getItInstance.registerLazySingleton<BackButtonDispatcherImpl>(
       () => BackButtonDispatcherImpl(),
     );
   }
 
-  NavigationCubit get navigationCubit => _getItInstance<NavigationCubit>();
+  Future<void> registerLocalNotifications() async {
+    final localNotifications =
+        LocalNotifications(FlutterLocalNotificationsPlugin());
+    await localNotifications.initAndSetup();
+
+    localNotifications.scheduleNotification(
+        DateTime.now().add(const Duration(seconds: 5)).millisecondsSinceEpoch);
+
+    _getItInstance
+        .registerLazySingleton<LocalNotifications>(() => localNotifications);
+  }
+
+  LocalNotifications get _localNotifications =>
+      _getItInstance.get<LocalNotifications>();
+  NotificationDetails get notificationDetails =>
+      _getItInstance.get<NotificationDetails>();
+
   ConverterCubit get converterCubit => _getItInstance<ConverterCubit>();
+  NavigationCubit get _navigationCubit => _getItInstance<NavigationCubit>();
 
   RouteInformationProviderImpl get routeInformationProvider =>
       _getItInstance<RouteInformationProviderImpl>();
@@ -183,15 +189,10 @@ class DependencyInjector {
   BackButtonDispatcherImpl get backButtonDispatcher =>
       _getItInstance<BackButtonDispatcherImpl>();
 
-  SharedPreferences get _sharedPreferences =>
-      _getItInstance<SharedPreferences>();
-
   DBClient get _client => _getItInstance<DBClient>();
 
   AppLocalDataSource get _appLocalDataSource =>
       _getItInstance<AppLocalDataSource>();
-  CountryLocalDataSource get _countryLocalDataSource =>
-      _getItInstance<CountryLocalDataSource>();
   CurrencyLocalDataSource get _currencyLocalDataSource =>
       _getItInstance<CurrencyLocalDataSource>();
   ExchangeRateLocalDataSource get _exchangeRateLocalDataSource =>
@@ -200,8 +201,6 @@ class DependencyInjector {
       _getItInstance<OrganizationLocalDataSource>();
 
   AppRepository get _appRepository => _getItInstance<AppRepository>();
-  CountryRepository get _countryRepository =>
-      _getItInstance<CountryRepository>();
   CurrencyRepository get _currencyRepository =>
       _getItInstance<CurrencyRepository>();
   ExchangeRateRepository get _exchangeRateRepository =>
@@ -210,7 +209,6 @@ class DependencyInjector {
       _getItInstance<OrganizationRepository>();
 
   ConvertCurrency get _convertCurrency => _getItInstance<ConvertCurrency>();
-  CreateCountries get _createCountries => _getItInstance<CreateCountries>();
   CreateCurrencies get _createCurrencies => _getItInstance<CreateCurrencies>();
   CreateOrganizations get _createOrganizations =>
       _getItInstance<CreateOrganizations>();
