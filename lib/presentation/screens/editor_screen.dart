@@ -1,48 +1,34 @@
-import 'package:amd_rub_converter/di/di.dart';
+import 'package:amd_rub_converter/presentation/core/url_launcher.dart';
+import 'package:amd_rub_converter/presentation/core/app_typography.dart';
 import 'package:amd_rub_converter/domain/entities/organization_entity.dart';
 import 'package:amd_rub_converter/domain/entities/exchange_rate_entity.dart';
 import 'package:amd_rub_converter/presentation/bloc/converter/converter_cubit.dart';
 import 'package:amd_rub_converter/presentation/bloc/converter/converter_state.dart';
-import 'package:amd_rub_converter/presentation/bloc/navigation/navigation_cubit.dart';
 import 'package:amd_rub_converter/presentation/widgets/exchange_rate_input_form.dart';
 import 'package:amd_rub_converter/presentation/screens/loading_screen.dart';
-import 'package:amd_rub_converter/presentation/core/app_typography.dart';
 
-import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter/material.dart';
 
-class EditorBuilder extends StatefulWidget {
+class EditorBuilder extends StatelessWidget {
   final ConverterState state;
 
   const EditorBuilder(this.state, {super.key});
 
   @override
-  State<EditorBuilder> createState() => _EditorBuilderState();
-}
-
-class _EditorBuilderState extends State<EditorBuilder> {
-  @override
-  void initState() {
-    BlocProvider.of<ConverterCubit>(context).initConverterState();
-    super.initState();
-  }
-
-  @override
-  Widget build(BuildContext context) => widget.state.cashExchangeRate != null &&
-          widget.state.cashlessExchangeRate != null
-      ? EditorScreen(
-          cashExchangeRate: widget.state.cashExchangeRate!,
-          cashlessExchangeRate: widget.state.cashlessExchangeRate!,
-          organizations: widget.state.organizations,
-          updateExchangeRates: (cashExchangeRate, cashlessExchangeRate) {
-            BlocProvider.of<ConverterCubit>(context)
-                .updateExchangeRates(cashExchangeRate, cashlessExchangeRate);
-            di.routerDelegate.navigation
-                .setNavigationState(const CurrencyConverter(), true);
-          },
-        )
-      : const LoadingScreen();
+  Widget build(BuildContext context) =>
+      state.cashExchangeRate == null || state.cashlessExchangeRate == null
+          ? const LoadingScreen()
+          : EditorScreen(
+              cashExchangeRate: state.cashExchangeRate!,
+              cashlessExchangeRate: state.cashlessExchangeRate!,
+              organizations: state.organizations,
+              updateExchangeRates: (cashExchangeRate, cashlessExchangeRate) {
+                BlocProvider.of<ConverterCubit>(context).updateExchangeRates(
+                    cashExchangeRate, cashlessExchangeRate);
+                Navigator.pop(context);
+              },
+            );
 }
 
 class EditorScreen extends StatefulWidget {
@@ -99,13 +85,8 @@ class _EditorScreenState extends State<EditorScreen> {
             child: Column(
               children: [
                 GestureDetector(
-                  onTap: () async {
-                    if (!await launchUrl(
-                      Uri.parse('https://t.me/armeniaCurrency'),
-                    )) {
-                      throw 'Could not launch url';
-                    }
-                  },
+                  onTap: () =>
+                      UrlLauncher.launchUrl('https://t.me/armeniaCurrency'),
                   child: const Text(
                     'Актуальные курсы',
                     style: AppTypography.body2Link,
@@ -137,11 +118,7 @@ class _EditorScreenState extends State<EditorScreen> {
         ),
       );
 
-  bool get _validateInput =>
-      cashRate == 0 ||
-      cashOrganizations.isEmpty ||
-      cashlessRate == 0 ||
-      cashlessOrganizations.isEmpty;
+  bool get _validateInput => cashRate <= 0 || cashlessRate <= 0;
 
   TextButton _buildAcceptButton() => TextButton(
         onPressed: () {
@@ -150,11 +127,15 @@ class _EditorScreenState extends State<EditorScreen> {
           widget.updateExchangeRates(
             widget.cashExchangeRate.copyWith(
               rate: cashRate == 0 ? 0 : 1 / cashRate,
-              organizations: cashOrganizations,
+              organizations: cashOrganizations.isEmpty
+                  ? [widget.organizations.first]
+                  : cashOrganizations,
             ),
             widget.cashlessExchangeRate.copyWith(
               rate: cashlessRate == 0 ? 0 : 1 / cashlessRate,
-              organizations: cashlessOrganizations,
+              organizations: cashlessOrganizations.isEmpty
+                  ? [widget.organizations.first]
+                  : cashlessOrganizations,
             ),
           );
         },

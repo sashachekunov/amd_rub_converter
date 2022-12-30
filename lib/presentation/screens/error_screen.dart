@@ -1,4 +1,3 @@
-import 'package:amd_rub_converter/di/di.dart';
 import 'package:amd_rub_converter/presentation/core/app_typography.dart';
 import 'package:amd_rub_converter/presentation/bloc/navigation/navigation_cubit.dart';
 
@@ -23,13 +22,15 @@ class ErrorScreen extends StatelessWidget {
             children: [
               _buildButton(
                 'Перейти в конвертер',
-                () => di.routerDelegate.navigation
-                    .setNavigationState(const CurrencyConverter()),
+                () => Router.of(context)
+                    .routerDelegate
+                    .setNewRoutePath(const CurrencyConverter()),
               ),
               _buildButton(
                 'Перейти в редактор',
-                () => di.routerDelegate.navigation
-                    .setNavigationState(const ExchangeRateEditor()),
+                () => Router.of(context)
+                    .routerDelegate
+                    .setNewRoutePath(const ExchangeRateEditor()),
               ),
             ],
           ),

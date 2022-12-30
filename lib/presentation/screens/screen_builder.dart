@@ -9,24 +9,26 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter/material.dart';
 
 class ScreenBuilder extends StatelessWidget {
-  const ScreenBuilder(this._navigationState, {Key? key}) : super(key: key);
-
   final NavigationState? _navigationState;
+
+  const ScreenBuilder(this._navigationState, {Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) =>
       BlocBuilder<ConverterCubit, ConverterState>(
         builder: (context, state) => GestureDetector(
           onTap: FocusScope.of(context).unfocus,
-          child: Builder(builder: (context) {
-            if (_navigationState is CurrencyConverter) {
-              return ConverterBuilder(state);
-            } else if (_navigationState is ExchangeRateEditor) {
-              return EditorBuilder(state);
-            }
+          child: Builder(
+            builder: (context) {
+              if (_navigationState is CurrencyConverter) {
+                return ConverterBuilder(state);
+              } else if (_navigationState is ExchangeRateEditor) {
+                return EditorBuilder(state);
+              }
 
-            return const ErrorScreen();
-          }),
+              return const ErrorScreen();
+            },
+          ),
         ),
       );
 }

@@ -1,4 +1,3 @@
-import 'package:amd_rub_converter/di/di.dart';
 import 'package:amd_rub_converter/domain/entities/exchange_rate_entity.dart';
 import 'package:amd_rub_converter/presentation/bloc/converter/converter_cubit.dart';
 import 'package:amd_rub_converter/presentation/bloc/converter/converter_state.dart';
@@ -11,36 +10,24 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-class ConverterBuilder extends StatefulWidget {
+class ConverterBuilder extends StatelessWidget {
   final ConverterState state;
 
   const ConverterBuilder(this.state, {super.key});
 
   @override
-  State<ConverterBuilder> createState() => _ConverterBuilderState();
-}
-
-class _ConverterBuilderState extends State<ConverterBuilder> {
-  @override
-  void initState() {
-    BlocProvider.of<ConverterCubit>(context).initConverterState();
-    super.initState();
-  }
-
-  @override
-  Widget build(BuildContext context) => widget.state.exchangeRate == null
+  Widget build(BuildContext context) => state.exchangeRate == null
       ? const LoadingScreen()
       : ConverterScreen(
-          cashless: widget.state.cashless,
-          exchangeRate: widget.state.exchangeRate!,
-          openEditor: () => di.routerDelegate.navigation
-              .setNavigationState(const ExchangeRateEditor()),
+          cashless: state.cashless,
+          exchangeRate: state.exchangeRate!,
+          openEditor: () => Router.of(context)
+              .routerDelegate
+              .setNewRoutePath(const ExchangeRateEditor()),
           switchCashlessMode:
               BlocProvider.of<ConverterCubit>(context).switchCashlessMode,
-          convert: (amount) async {
-            return await BlocProvider.of<ConverterCubit>(context)
-                .convert(amount);
-          },
+          convert: (amount) async =>
+              await BlocProvider.of<ConverterCubit>(context).convert(amount),
         );
 }
 
@@ -96,26 +83,24 @@ class _ConverterScreenState extends State<ConverterScreen> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      extendBodyBehindAppBar: true,
-      backgroundColor: Colors.amber[50],
-      appBar: _buildAppBar(),
-      body: Center(
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              _buildExchangeRateInfo(),
-              _buildDivider(),
-              _buildConverter(),
-              _buildDivider(),
-              _buildHelperChips(),
-            ],
+  Widget build(BuildContext context) => Scaffold(
+        extendBodyBehindAppBar: true,
+        backgroundColor: Colors.amber[50],
+        appBar: _buildAppBar(),
+        body: Center(
+          child: SingleChildScrollView(
+            child: Column(
+              children: [
+                _buildExchangeRateInfo(),
+                _buildDivider(),
+                _buildConverter(),
+                _buildDivider(),
+                _buildHelperChips(),
+              ],
+            ),
           ),
         ),
-      ),
-    );
-  }
+      );
 
   AppBar _buildAppBar() => AppBar(
         elevation: 0,
@@ -138,9 +123,12 @@ class _ConverterScreenState extends State<ConverterScreen> {
             tooltip: 'Редактировать курс',
           ),
           IconButton(
-            onPressed: () {
+            onPressed: () async {
               FocusScope.of(context).unfocus();
               widget.switchCashlessMode();
+              final result = await widget
+                  .convert(double.tryParse(_textController.text) ?? 0);
+              setState(() => converterResult = result);
             },
             icon: Icon(
               widget.cashless ? Icons.credit_card : Icons.money_rounded,
@@ -218,7 +206,6 @@ class _ConverterScreenState extends State<ConverterScreen> {
                   style: AppTypography.h1,
                 ),
                 TextField(
-                  autofocus: true,
                   maxLength: 7,
                   maxLines: 1,
                   style: AppTypography.h2,

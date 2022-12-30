@@ -121,7 +121,10 @@ class _ExchangeRateInputFormState extends State<ExchangeRateInputForm> {
   PopupMenuItem<OrganizationEntity> _organizationPopupMenuItem(
           OrganizationEntity organization) =>
       PopupMenuItem<OrganizationEntity>(
-          value: organization, child: _buildOrganizationRow(organization));
+        value: organization,
+        padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 15),
+        child: _buildOrganizationRow(organization),
+      );
 
   Row _buildOrganizationRow(OrganizationEntity organization) => Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -143,11 +146,11 @@ class _ExchangeRateInputFormState extends State<ExchangeRateInputForm> {
           Flexible(
             child: Image.network(
               organization.image,
-              height: 50,
-              width: 50,
+              height: 40,
+              width: 40,
               fit: BoxFit.contain,
               errorBuilder: (context, error, stackTrace) =>
-                  const SizedBox(height: 50, width: 50),
+                  const SizedBox(height: 40, width: 40),
             ),
           ),
         ],
