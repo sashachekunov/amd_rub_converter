@@ -1,5 +1,4 @@
 import 'package:amd_rub_converter/domain/repositories/app_repository.dart';
-import 'package:amd_rub_converter/domain/repositories/country_repository.dart';
 import 'package:amd_rub_converter/domain/repositories/currency_repository.dart';
 import 'package:amd_rub_converter/domain/repositories/organization_repository.dart';
 import 'package:amd_rub_converter/domain/repositories/exchange_rate_repository.dart';
@@ -14,17 +13,14 @@ import 'domain/entities/currency.dart';
 import 'domain/entities/organization.dart';
 import 'domain/entities/exchange_rate.dart';
 import 'domain/use_cases/app_use_cases.dart';
-import 'domain/use_cases/country_use_cases.dart';
 import 'domain/use_cases/currency_use_cases.dart';
 import 'domain/use_cases/organization_use_cases.dart';
 import 'domain/use_cases/exchange_rate_use_cases.dart';
 import 'domain/repositories/app_repository.dart';
-import 'domain/repositories/country_repository.dart';
 import 'domain/repositories/currency_repository.dart';
 import 'domain/repositories/organization_repository.dart';
 import 'domain/repositories/exchange_rate_repository.dart';
 import 'data/data_sources/app_local_data_source.dart' as app_local_ds;
-import 'data/data_sources/country_local_data_source.dart' as country_local_ds;
 import 'data/data_sources/currency_local_data_source.dart' as currency_local_ds;
 import 'data/data_sources/organization_local_data_source.dart'
     as organization_local_ds;
@@ -89,25 +85,6 @@ void main() {
 
       test('WriteFirstLaunch failure',
           () => testWriteFirstLaunch(failureRepository));
-    });
-
-    group('Country', () {
-      late CountryRepository repository;
-      late CountryRepository failureRepository;
-
-      setUp(() {
-        repository = createMockedCountryRepository();
-        failureRepository = createMockedFailureCountryRepository();
-      });
-
-      test('CreateCountries success', () => testCreateCountries(repository));
-
-      test('CreateCountries failure',
-          () => testCreateCountries(failureRepository));
-
-      test('ReadCountries success', () => testReadCountries(repository));
-
-      test('ReadCountries failure', () => testReadCountries(failureRepository));
     });
 
     group('Currency', () {
@@ -246,17 +223,6 @@ void main() {
 
       test('WriteFirstLaunch success',
           () => app_local_ds.testWriteFirstLaunch(preferences));
-    });
-
-    group('Country', () {
-      test('ReadCountries success',
-          () => country_local_ds.testReadCountries(preferences));
-
-      test('ReadCountries exception',
-          () => country_local_ds.testReadCountries(failurePreferences));
-
-      test('CreateCountries success',
-          () => country_local_ds.testCreateCountries(preferences));
     });
 
     group('Currency', () {
