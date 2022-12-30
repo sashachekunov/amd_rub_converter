@@ -14,25 +14,30 @@ abstract class NavigationState {
 
   @override
   int get hashCode => prevState.hashCode;
+
+  @override
+  String toString() => '$runtimeType(prevState: $prevState)';
+
+  String toRoute() => throw (UnimplementedError());
 }
 
 class ExchangeRateEditor extends NavigationState {
   const ExchangeRateEditor([super.prevState]);
 
   @override
-  String toString() => Routes.exchangeRateEditor;
+  String toRoute() => Routes.exchangeRateEditor;
 }
 
 class CurrencyConverter extends NavigationState {
   const CurrencyConverter([super.prevState]);
 
   @override
-  String toString() => Routes.currencyConverter;
+  String toRoute() => Routes.currencyConverter;
 }
 
 class ErrorNotFound extends NavigationState {
   const ErrorNotFound([super.prevState]);
 
   @override
-  String toString() => Routes.error;
+  String toRoute() => Routes.error;
 }

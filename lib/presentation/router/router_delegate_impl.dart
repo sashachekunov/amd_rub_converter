@@ -1,19 +1,14 @@
-import 'package:amd_rub_converter/di/di.dart';
-import 'package:amd_rub_converter/presentation/screen_builder.dart';
+import 'package:amd_rub_converter/presentation/screens/screen_builder.dart';
 import 'package:amd_rub_converter/presentation/bloc/navigation/navigation_cubit.dart';
 
 import 'package:flutter/material.dart';
-import 'dart:developer' as dev;
 
 class RouterDelegateImpl extends RouterDelegate<NavigationState>
     with ChangeNotifier, PopNavigatorRouterDelegateMixin<NavigationState> {
   final NavigationCubit navigation;
 
-  RouterDelegateImpl() : navigation = di.navigationCubit {
-    navigation.stream.distinct().forEach((state) {
-      dev.log('go to $state', name: runtimeType.toString());
-      notifyListeners();
-    });
+  RouterDelegateImpl(this.navigation) {
+    navigation.stream.distinct().forEach((state) => notifyListeners());
   }
 
   @override

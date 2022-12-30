@@ -9,7 +9,7 @@ class RouteInformationParserImpl = RouteInformationParser<NavigationState>
 mixin _RestoreRouteInformationMixin on RouteInformationParser<NavigationState> {
   @override
   RouteInformation? restoreRouteInformation(NavigationState configuration) =>
-      RouteInformation(location: configuration.toString());
+      RouteInformation(location: configuration.toRoute());
 }
 
 mixin _ParseRouteInformationMixin on RouteInformationParser<NavigationState> {
