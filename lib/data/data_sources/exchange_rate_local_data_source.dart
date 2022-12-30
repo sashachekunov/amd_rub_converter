@@ -1,8 +1,8 @@
 import 'package:amd_rub_converter/data/core/db_client.dart';
 import 'package:amd_rub_converter/data/core/db_constants.dart';
 import 'package:amd_rub_converter/data/core/exceptions.dart';
-import 'package:amd_rub_converter/data/models/exchange_rate_model.dart';
 import 'package:amd_rub_converter/data/models/organization_model.dart';
+import 'package:amd_rub_converter/data/models/exchange_rate_model.dart';
 
 abstract class ExchangeRateLocalDataSource {
   const ExchangeRateLocalDataSource();
@@ -29,11 +29,13 @@ class ExchangeRateLocalDataSourceImpl implements ExchangeRateLocalDataSource {
       exchangeRate.fromModel().convert(amount);
 
   @override
-  Future<bool> isExchangeRateValid(int timestamp) async =>
-      DateTime.now()
-          .difference(DateTime.fromMillisecondsSinceEpoch(timestamp))
-          .inHours <=
-      12;
+  Future<bool> isExchangeRateValid(int timestamp) async {
+    final today = DateTime.now();
+    final updateTime = DateTime(
+        today.year, today.month, today.day - (today.hour < 11 ? 1 : 0), 11);
+
+    return DateTime.fromMillisecondsSinceEpoch(timestamp).isAfter(updateTime);
+  }
 
   @override
   Future<ExchangeRateModel> readExchangeRateAMDRUB(bool cashless) async {

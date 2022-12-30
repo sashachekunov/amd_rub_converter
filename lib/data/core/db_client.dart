@@ -34,9 +34,13 @@ class DBClient {
   }
 
   String _encodeToJsonString(Object value) {
-    if (value is Map<String, dynamic>) return json.encode(value);
+    if (value is String) return value.toString();
 
-    return value.toString();
+    try {
+      return json.encode(value);
+    } catch (e) {
+      return value.toString();
+    }
   }
 
   dynamic _decodeFromJsonString(String jsonString) {
