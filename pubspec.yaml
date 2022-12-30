@@ -1,7 +1,7 @@
 name: amd_rub_converter
 description: A new Flutter project.
 publish_to: 'none'
-version: 1.0.0+3
+version: 1.0.0+4
 
 
 environment:
@@ -23,6 +23,10 @@ dependencies:
   bloc: ^8.1.0
   flutter_bloc: ^8.1.1
 
+  # notifications
+  flutter_local_notifications: ^13.0.0
+  timezone: ^0.9.0
+
   # dart
   get_it: ^7.2.0
   dartz: ^0.10.1
@@ -35,10 +39,12 @@ dependencies:
   shared_preferences: ^2.0.15
 
   # widgets
+  flutter_native_splash: ^2.2.3
   cupertino_icons: ^1.0.2
   url_launcher: ^6.1.7
 
 
+# flutter pub run build_runner build --delete-conflicting-outputs
 dev_dependencies:
   # testing
   test: ^1.21.1
@@ -48,6 +54,7 @@ dev_dependencies:
   freezed: ^2.0.3+1
   build_runner: ^2.1.11
   json_serializable: ^6.2.0
+  flutter_launcher_icons: ^0.11.0
 
   # linters
   flutter_lints: ^2.0.0
@@ -56,6 +63,9 @@ dev_dependencies:
 flutter:
   uses-material-design: true
 
+  assets:
+    - assets/launcher_icons/
+    - assets/splash/
   fonts:
     - family: NotoSans-Regular
       fonts:
@@ -69,3 +79,37 @@ flutter:
     - family: NotoSans-Bold
       fonts:
         - asset: assets/fonts/Noto_Sans/NotoSans-Bold.ttf
+
+
+# flutter pub run flutter_launcher_icons:main
+flutter_icons:
+  android: true
+  image_path_android: "assets/launcher_icons/icon_1024.png"
+  adaptive_icon_foreground: "assets/launcher_icons/icon_864.png"
+  adaptive_icon_background: "assets/launcher_icons/background_620x420.png"
+
+  ios: true
+  remove_alpha_ios: true
+  image_path_ios: "assets/launcher_icons/icon_1024.png"
+
+  web:
+    generate: true
+    image_path: "assets/launcher_icons/icon_1024.png"
+    background_color: "#FFEC3B"
+    theme_color: "#FFEC3B"
+
+
+# flutter pub run flutter_native_splash:create
+flutter_native_splash:
+  ios: true
+  web: false
+  android: true
+  color: "#FFFFFF"
+  color_dark: "#303030"
+  image_ios: assets/splash/icon_ios.png
+  image_android: assets/splash/icon_android.png
+
+  android_12:
+    image: assets/splash/icon_android_12.png
+    color: "#FFFFFF"
+    color_dark: "#303030"
